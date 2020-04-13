@@ -36,7 +36,7 @@ public class ExecAllocGrp {
      */
     @JsonProperty("TradeId")
     @JsonPropertyDescription("An explanation about the purpose of this instance.")
-    private Integer tradeId = 0;
+    private Long tradeId ;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -48,7 +48,7 @@ public class ExecAllocGrp {
      * 
      */
     @JsonProperty("TradeId")
-    public Integer getTradeId() {
+    public Long getTradeId() {
         return tradeId;
     }
 
@@ -60,11 +60,11 @@ public class ExecAllocGrp {
      * 
      */
     @JsonProperty("TradeId")
-    public void setTradeId(Integer tradeId) {
+    public void setTradeId(Long tradeId) {
         this.tradeId = tradeId;
     }
 
-    public ExecAllocGrp withTradeId(Integer tradeId) {
+    public ExecAllocGrp withTradeId(Long tradeId) {
         this.tradeId = tradeId;
         return this;
     }
