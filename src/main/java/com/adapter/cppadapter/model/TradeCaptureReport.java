@@ -36,7 +36,7 @@ public class TradeCaptureReport {
      */
     @JsonProperty("SecondaryTradeID")
     @JsonPropertyDescription("An explanation about the purpose of this instance.")
-    private Integer secondaryTradeID = 0;
+    private Long secondaryTradeID ;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -48,7 +48,7 @@ public class TradeCaptureReport {
      * 
      */
     @JsonProperty("SecondaryTradeID")
-    public Integer getSecondaryTradeID() {
+    public Long getSecondaryTradeID() {
         return secondaryTradeID;
     }
 
@@ -60,11 +60,11 @@ public class TradeCaptureReport {
      * 
      */
     @JsonProperty("SecondaryTradeID")
-    public void setSecondaryTradeID(Integer secondaryTradeID) {
+    public void setSecondaryTradeID(Long secondaryTradeID) {
         this.secondaryTradeID = secondaryTradeID;
     }
 
-    public TradeCaptureReport withSecondaryTradeID(Integer secondaryTradeID) {
+    public TradeCaptureReport withSecondaryTradeID(Long secondaryTradeID) {
         this.secondaryTradeID = secondaryTradeID;
         return this;
     }
