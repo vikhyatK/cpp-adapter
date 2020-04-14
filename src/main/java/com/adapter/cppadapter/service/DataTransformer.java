@@ -150,7 +150,7 @@ public class DataTransformer {
 	
 	public Party createParty(String partyId, Integer partyRole,List<PartiesSubGroup> subgrps){
 		Party party = new Party();
-		party.setPartyId(partyId);
+		party.setPartyId(Integer.valueOf(partyId));
 		party.setPartyRole(partyRole);
 		if(!subgrps.isEmpty()){
 			party.setPartiesSubGroup(subgrps);
