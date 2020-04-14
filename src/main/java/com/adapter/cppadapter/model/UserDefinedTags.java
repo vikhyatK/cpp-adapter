@@ -97,7 +97,7 @@ public class UserDefinedTags {
      */
     @JsonProperty("BTDSPriceChangeCode")
     @JsonPropertyDescription("An explanation about the purpose of this instance.")
-    private Integer bTDSPriceChangeCode = 0;
+    private Boolean bTDSPriceChangeCode ;
     /**
      * The Reportedpxdiff Schema
      * <p>
@@ -314,7 +314,7 @@ public class UserDefinedTags {
      * 
      */
     @JsonProperty("BTDSPriceChangeCode")
-    public Integer getBTDSPriceChangeCode() {
+    public Boolean getBTDSPriceChangeCode() {
         return bTDSPriceChangeCode;
     }
 
@@ -326,11 +326,11 @@ public class UserDefinedTags {
      * 
      */
     @JsonProperty("BTDSPriceChangeCode")
-    public void setBTDSPriceChangeCode(Integer bTDSPriceChangeCode) {
+    public void setBTDSPriceChangeCode(Boolean bTDSPriceChangeCode) {
         this.bTDSPriceChangeCode = bTDSPriceChangeCode;
     }
 
-    public UserDefinedTags withBTDSPriceChangeCode(Integer bTDSPriceChangeCode) {
+    public UserDefinedTags withBTDSPriceChangeCode(Boolean bTDSPriceChangeCode) {
         this.bTDSPriceChangeCode = bTDSPriceChangeCode;
         return this;
     }
