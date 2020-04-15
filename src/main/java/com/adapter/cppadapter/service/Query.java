@@ -1,5 +1,10 @@
 package com.adapter.cppadapter.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +44,12 @@ public class Query {
 	@Value(value = "${session.password}")
 	private String password;
 	
+	@Value(value = "${session.config}")
+	private String configPath;
+	
+	@Value(value = "${session.cookie.file}")
+	private String cookieFlatFile;
+	
 	private static final Logger LOG = LogManager.getLogger(Query.class);
 	
 	@Scheduled(cron = "${spring.query.cron.expression}")
@@ -50,7 +61,7 @@ public class Query {
 		/// Create a disposer object to ensure objects are neatly cleaned up
 		final Disposer disposer = new Disposer();
 		try {
-			session = disposer.disposes(SessionFactory.create_session("../../etc/config.ini"));
+			session = disposer.disposes(SessionFactory.create_session(configPath));
 			boolean run = true;
 	        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			while(run) {
@@ -85,14 +96,47 @@ public class Query {
 
 	private void callQuery(Session session) throws Exception {
 		final AmpQueryReqChoice req = new AmpQueryReqChoice(AmpQueryReqChoice._TRADEREQ, new AmpTradeReq());
-		final Iterator iterator = session.query(new QueryRequest(req));
-		QueryReply[] replies = iterator.next();
+		byte[] cookie = loadCookieFromFile();
+		QueryReply[] replies = null;
+		if(cookie == null) {
+			final Iterator iterator = session.query(new QueryRequest(req));
+			replies = iterator.next();
+			writeCookieToFile(iterator.cookie());
+		}
+		else {
+			final Iterator iteratorWithCookie = session.query(new QueryRequest(req), cookie);
+			replies = iteratorWithCookie.next();
+			writeCookieToFile(iteratorWithCookie.cookie());
+		}
+		
 		/// print out the responses
 		for (int i = 0; i != replies.length; ++i) {
 			LOG.info("Query result:"+ replies[i]);
 			AmpTradeRep tradeRep = replies[i].message().getTradeRep();
 			interService.mapAndSendToKafka(tradeRep);
 		}
+	}
+
+	private void writeCookieToFile(byte[] cookie) {
+		Path path = Paths.get(cookieFlatFile);
+		try {
+			Files.write(path, cookie);
+		} catch (IOException e) {
+			LOG.error("Cannot write to file" +e);
+			e.printStackTrace();
+		}		
+	}
+
+	private byte[] loadCookieFromFile() {
+		byte[] cookie = null; 	
+		Path path = Paths.get(cookieFlatFile);
+	    try {
+	    	cookie = Files.readAllBytes(path);
+		} catch (IOException e) {
+			LOG.error("File not found" +e);
+			e.printStackTrace();
+		}
+		return cookie;
 	}
 
 	private boolean breakLoop() throws ParseException {
