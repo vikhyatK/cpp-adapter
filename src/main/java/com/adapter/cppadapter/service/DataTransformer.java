@@ -29,18 +29,18 @@ public class DataTransformer {
 			payload.setTradeDate(data.getDynamics().getAmendTime().getDate().toString());
 		
 		ExecAllocGrp execAllocGrp = new ExecAllocGrp();
-		execAllocGrp.setTradeId(data.getTradeId().getTradeNo().value);
+		execAllocGrp.setTradeId(Long.valueOf(data.getTradeId().getTradeNo().toString()));
 		payload.setExecAllocGrp(execAllocGrp);
 		
 		OrdAllocGrp buyOrdAlloc = new OrdAllocGrp();
 		buyOrdAlloc.setOrderSide("Buy");
 		buyOrdAlloc.setOrderDate(data.getStatics().getBuyOrderId().getOrderDate().toString());
-		buyOrdAlloc.setOrderID((int)data.getStatics().getBuyOrderId().getOrderDate().value);
+		buyOrdAlloc.setOrderID(Integer.valueOf(data.getStatics().getBuyOrderId().getOrderNo().toString()));
 		buyOrdAlloc.setSecondaryClOrdID(data.getStatics().getBuyBrokerRef().toString());
 		buyOrdAlloc.setCIOrdID(data.getStatics().getBuyExtOrderId().toString());
 		List<Party> buyParties = new ArrayList<>();
-		buyParties.add(createParty(new String(data.getStatics().getBuyTraderId().value), 12, null));
-		buyParties.add(createParty(new String(data.getStatics().getBuyOperatorId().value), 36, null));
+		buyParties.add(createParty(new String(data.getStatics().getBuyTraderId().toString()), 12, null));
+		buyParties.add(createParty(new String(data.getStatics().getBuyOperatorId().toString()), 36, null));
 		List<PartiesSubGroup> buyPartiesSubGroups1 = new ArrayList<>();
 		buyPartiesSubGroups1.add(createPartySubGroups(data.getStatics().getIsBuyOrderPublic().toString(), 4001));
 		buyPartiesSubGroups1.add(createPartySubGroups(data.getStatics().getBuyShortBrokerRef().toString(), 4002));

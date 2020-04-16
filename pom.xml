@@ -19,7 +19,6 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Hoxton.SR1</spring-cloud.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,26 +59,33 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>syssrv</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${env.CLASSPATH}/lib/syssrv.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>xstream_api</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${env.CLASSPATH}/lib/xstream_api.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>amp</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${env.CLASSPATH}/lib/amp.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>asn1rt</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${env.CLASSPATH}/lib/asn1rt.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -108,6 +114,14 @@
 
 	<build>
 		<finalName>Rest-Kafka-Adapter</finalName>
+		<resources>
+			<resource>
+				<directory>${env.CLASSPATH}/include</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
