@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.omxgroup.syssrv.AsyncRunnable;
 import com.omxgroup.syssrv.Disposer;
 import com.omxgroup.syssrv.Trace;
 import com.omxgroup.xstream.amp.AmpQueryReqChoice;
@@ -31,7 +30,7 @@ import com.omxgroup.xstream.api.Session;
 import com.omxgroup.xstream.api.SessionFactory;
 
 @RefreshScope
-public class Query {
+public class Query_v0 {
 	
 	@Autowired
 	KafkaProducer producer;
@@ -51,16 +50,18 @@ public class Query {
 	@Value(value = "${session.cookie.file}")
 	private String cookieFlatFile;
 	
-	private static final Logger LOG = LogManager.getLogger(Query.class);
+	private static final Logger LOG = LogManager.getLogger(Query_v0.class);
 	
-	@Scheduled(cron = "${spring.query.cron.expression}")
+//	@Scheduled(cron = "${spring.query.cron.expression}")
 	public void query(String argv[]) {
 		LOG.info("Query Process started");
 		/// unset set this to enable trace
 		Trace.setInstance(Trace.noTraceInstance());
 
+		/// Create a disposer object to ensure objects are neatly cleaned up
+		final Disposer disposer = new Disposer();
 		try {
-			session = SessionFactory.create_session(configPath);
+			session = disposer.disposes(SessionFactory.create_session(configPath));
 			boolean run = true;
 	        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			while(run) {
@@ -88,11 +89,7 @@ public class Query {
 			LOG.error("Java Exception: " + e);
 			e.printStackTrace(System.err);
 		} finally {
-			if (session != null) {
-		        /// cleanup any resources allocated by the session object
-		        session.dispose(AsyncRunnable.NOOP);
-		        session = null;
-		      } 
+			disposer.dispose();
 			LOG.info("Task Completed");
 		}
 	}

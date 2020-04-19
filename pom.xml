@@ -128,6 +128,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<skipTests>true</skipTests>
+					<layout>ZIP</layout>
 				</configuration>
 			</plugin>
 		</plugins>
