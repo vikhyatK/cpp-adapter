@@ -1,6 +1,5 @@
 package com.adapter.cppadapter.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +18,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.omxgroup.syssrv.AsyncRunnable;
-import com.omxgroup.syssrv.Disposer;
 import com.omxgroup.syssrv.Trace;
 import com.omxgroup.xstream.amp.AmpQueryReqChoice;
 import com.omxgroup.xstream.amp.AmpTradeRep;
@@ -54,7 +52,7 @@ public class Query {
 	private static final Logger LOG = LogManager.getLogger(Query.class);
 	
 	@Scheduled(cron = "${spring.query.cron.expression}")
-	public void query(String argv[]) {
+	public void query() {
 		LOG.info("Query Process started");
 		/// unset set this to enable trace
 		Trace.setInstance(Trace.noTraceInstance());
