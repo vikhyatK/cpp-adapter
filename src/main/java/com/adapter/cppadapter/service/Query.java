@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import com.omxgroup.syssrv.AsyncRunnable;
 import com.omxgroup.syssrv.Trace;
@@ -28,6 +29,7 @@ import com.omxgroup.xstream.api.QueryRequest;
 import com.omxgroup.xstream.api.Session;
 import com.omxgroup.xstream.api.SessionFactory;
 
+@Service
 @RefreshScope
 public class Query {
 	
