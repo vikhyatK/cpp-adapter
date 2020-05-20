@@ -64,28 +64,28 @@
 			<artifactId>syssrv</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${env.HOME}/lib/syssrv.jar</systemPath>
+			<systemPath>${env.CLASSPATH}/lib/syssrv.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>xstream_api</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${env.HOME}/lib/xstream_api.jar</systemPath>
+			<systemPath>${env.CLASSPATH}/lib/xstream_api.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>amp</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${env.HOME}/lib/amp.jar</systemPath>
+			<systemPath>${env.CLASSPATH}/lib/amp.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.omxgroup</groupId>
 			<artifactId>asn1rt</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${env.HOME}/lib/asn1rt.jar</systemPath>
+			<systemPath>${env.CLASSPATH}/lib/asn1rt.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -116,7 +116,7 @@
 		<finalName>Rest-Kafka-Adapter</finalName>
 		<resources>
 			<resource>
-				<directory>${env.HOME}/include</directory>
+				<directory>${env.CLASSPATH}/include</directory>
 				<includes>
 					<include>**/*</include>
 				</includes>

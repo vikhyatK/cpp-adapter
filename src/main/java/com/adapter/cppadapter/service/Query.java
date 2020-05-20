@@ -66,6 +66,7 @@ public class Query {
 	@PostConstruct
 	private void postConstruct() throws ParseException {
 		if (isTimeInRange()) {
+			System.err.println(isTimeInRange());
 			query();
 		}
 	}
@@ -73,7 +74,7 @@ public class Query {
 	@Scheduled(cron = "${spring.query.cron.expression}")
 	public void query() {
 		LOG.info("Query Process started");
-		/// unset set this to enable trace
+		// unset set this to enable trace
 		Trace.setInstance(Trace.noTraceInstance());
 
 		try {
