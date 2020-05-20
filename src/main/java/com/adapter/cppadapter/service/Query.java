@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,27 +34,42 @@ import com.omxgroup.xstream.api.SessionFactory;
 @Service
 @RefreshScope
 public class Query {
-	
+
+	private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm");
+
 	@Autowired
 	KafkaProducer producer;
-	
+
 	@Autowired
 	IntermediateService interService;
-	
+
 	private Session session = null;
 	@Value(value = "${session.username}")
 	private String username;
 	@Value(value = "${session.password}")
 	private String password;
-	
+
 	@Value(value = "${session.config}")
 	private String configPath;
-	
+
 	@Value(value = "${session.cookie.file}")
 	private String cookieFlatFile;
-	
+
+	@Value(value = "${spring.query.start.time}")
+	private String startTime;
+
+	@Value(value = "${spring.query.end.time}")
+	private String endTime;
+
 	private static final Logger LOG = LogManager.getLogger(Query.class);
-	
+
+	@PostConstruct
+	private void postConstruct() throws ParseException {
+		if (isTimeInRange()) {
+			query();
+		}
+	}
+
 	@Scheduled(cron = "${spring.query.cron.expression}")
 	public void query() {
 		LOG.info("Query Process started");
@@ -62,8 +79,8 @@ public class Query {
 		try {
 			session = SessionFactory.create_session(configPath);
 			boolean run = true;
-	        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-			while(run) {
+			ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			while (run) {
 				if (session.logon(username, password)) {
 					executor.execute(new Runnable() {
 						@Override
@@ -72,10 +89,10 @@ public class Query {
 								callQuery(session);
 							} catch (Exception e) {
 								e.printStackTrace();
-							}						
+							}
 						}
-					});      
-	                Thread.sleep(500);
+					});
+					Thread.sleep(500);
 				}
 				run = !breakLoop();
 			}
@@ -89,10 +106,10 @@ public class Query {
 			e.printStackTrace(System.err);
 		} finally {
 			if (session != null) {
-		        /// cleanup any resources allocated by the session object
-		        session.dispose(AsyncRunnable.NOOP);
-		        session = null;
-		      } 
+				/// cleanup any resources allocated by the session object
+				session.dispose(AsyncRunnable.NOOP);
+				session = null;
+			}
 			LOG.info("Task Completed");
 		}
 	}
@@ -101,20 +118,19 @@ public class Query {
 		final AmpQueryReqChoice req = new AmpQueryReqChoice(AmpQueryReqChoice._TRADEREQ, new AmpTradeReq());
 		byte[] cookie = loadCookieFromFile();
 		QueryReply[] replies = null;
-		if(cookie == null) {
+		if (cookie == null) {
 			final Iterator iterator = session.query(new QueryRequest(req));
 			replies = iterator.next();
 			writeCookieToFile(iterator.cookie());
-		}
-		else {
+		} else {
 			final Iterator iteratorWithCookie = session.query(new QueryRequest(req), cookie);
 			replies = iteratorWithCookie.next();
 			writeCookieToFile(iteratorWithCookie.cookie());
 		}
-		
+
 		/// print out the responses
 		for (int i = 0; i != replies.length; ++i) {
-			LOG.info("Query result:"+ replies[i]);
+			LOG.info("Query result:" + replies[i]);
 			AmpTradeRep tradeRep = replies[i].message().getTradeRep();
 			interService.mapAndSendToKafka(tradeRep);
 		}
@@ -125,27 +141,33 @@ public class Query {
 		try {
 			Files.write(path, cookie);
 		} catch (IOException e) {
-			LOG.error("Cannot write to file" +e);
+			LOG.error("Cannot write to file" + e);
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	private byte[] loadCookieFromFile() {
-		byte[] cookie = null; 	
+		byte[] cookie = null;
 		Path path = Paths.get(cookieFlatFile);
-	    try {
-	    	cookie = Files.readAllBytes(path);
+		try {
+			cookie = Files.readAllBytes(path);
 		} catch (IOException e) {
-			LOG.error("File not found" +e);
+			LOG.error("File not found" + e);
 			e.printStackTrace();
 		}
 		return cookie;
 	}
 
+	private boolean isTimeInRange() throws ParseException {
+		Date date = new Date();
+		SDF.format(date);
+		return SDF.parse(SDF.format(date)).after(SDF.parse(startTime))
+				&& SDF.parse(SDF.format(date)).before(SDF.parse(endTime));
+	}
+
 	private boolean breakLoop() throws ParseException {
-		Date date = new Date() ;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm") ;
-		dateFormat.format(date);
-		return dateFormat.parse(dateFormat.format(date)).after(dateFormat.parse("19:00"));
+		Date date = new Date();
+		SDF.format(date);
+		return SDF.parse(SDF.format(date)).after(SDF.parse(endTime));
 	}
 }
